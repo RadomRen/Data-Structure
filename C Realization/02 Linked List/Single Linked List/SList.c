@@ -3,9 +3,9 @@
 #include "SList.h"
 
 //打印链表
-void SListPrint(SLT* plist)
+void SListPrint(SLTNode* phead)
 {
-	SLTNode* cur = plist->phead;
+	SLTNode* cur = phead;
 	while (cur != NULL)
 	{
 		printf("%d->", cur->data);
@@ -14,151 +14,144 @@ void SListPrint(SLT* plist)
 	printf("NULL\n");
 }
 
-//链表后插
-void SListPushBack(SLT* plist, SLTDataType x)
+SLTNode* BuyListNode(SLTDataType x)
 {
 	SLTNode* newNode = (SLTNode*)malloc(sizeof(SLTNode));
+	if (newNode == NULL)
+	{
+		printf("malloc fail\n");
+		exit(-1);
+	}
 	newNode->data = x;
 	newNode->next = NULL;
-	SLTNode* phead = plist->phead;
-	if (phead == NULL)
+	return newNode;
+}
+
+//链表尾插
+void SListPushBack(SLTNode** pphead, SLTDataType x)
+{
+	SLTNode* newNode = BuyListNode(x);
+	SLTNode* tail = *pphead;
+	if (tail == NULL)
 	{
-		plist->phead = newNode;
+		*pphead = newNode;
 	}
 	else
 	{
-		SLTNode* cur = phead;
-		while(cur->next != NULL)
+		while(tail->next != NULL)
+		{
+			tail = tail->next;
+		}
+		tail->next = newNode;
+	}
+}
+
+//链表尾删
+void SListPopBack(SLTNode** pphead)
+{
+	assert(*pphead != NULL);
+	SLTNode* tail = *pphead;
+	if (tail->next == NULL)
+	{
+		free(*pphead);
+		*pphead = NULL;
+	}
+	else
+	{
+		SLTNode* prev = NULL;
+		while(tail->next != NULL)
+		{
+			prev = tail;
+			tail = tail->next;
+		}
+		free(tail);
+		tail = NULL;
+		prev->next = NULL;
+	}
+}
+
+//链表头插
+void SListPushFront(SLTNode** pphead, SLTDataType x)
+{
+	SLTNode* newNode = BuyListNode(x);
+	newNode->next = *pphead;
+	*pphead = newNode;
+}
+
+//链表头删
+void SListPopFront(SLTNode** pphead)
+{
+	assert(*pphead != NULL);
+	SLTNode* tmp = (*pphead)->next;
+	free(*pphead);
+	*pphead = tmp;
+}
+
+//链表元素查找
+SLTNode* SListFind(SLTNode* phead, SLTDataType x)
+{
+	SLTNode* cur = phead;
+	while (cur != NULL)
+	{
+		if (cur->data == x)
+			return cur;
+		else
+			cur = cur->next;
+	} 
+	return NULL;
+}
+
+//给定位置pos插入元素
+void SListInsert(SLTNode** pphead, SLTNode* pos, SLTDataType x)
+{
+	assert(*pphead && pos);
+	SLTNode* newNode = (SLTNode*)malloc(sizeof(SLTNode));
+	newNode->data = x;
+	newNode->next = pos;
+	SLTNode* cur = *pphead;
+	if (cur != pos)
+	{
+		while (cur->next != pos)
 		{
 			cur = cur->next;
 		}
 		cur->next = newNode;
 	}
-	plist->sz++;
-}
-
-//链表尾删
-void SListPopBack(SLT* plist)
-{
-	assert(plist->phead != NULL);
-	SLTNode* cur = plist->phead;
-	if (cur->next == NULL)
-	{
-		free(plist->phead);
-		plist->phead = NULL;
-	}
 	else
 	{
-
-		SLTNode* tmp = cur->next;
-		while(tmp->next != NULL)
-		{
-			cur = cur->next;
-			tmp = cur->next;
-		}
-		free(tmp);
-		cur->next = NULL;
+		*pphead = newNode;
 	}
-	plist->sz--;
-}
 
-//链表头插
-void SListPushFront(SLT* plist, SLTDataType x)
-{
-	SLTNode* newNode = (SLTNode*)malloc(sizeof(SLTNode));
-	newNode->data = x;
-	newNode->next = plist->phead;
-	plist->phead = newNode;
-	plist->sz++;
-}
-
-//链表头删
-void SListPopFront(SLT* plist)
-{
-	assert(plist->phead != NULL);
-	SLTNode* tmp = (plist->phead)->next;
-	free(plist->phead);
-	plist->phead = tmp;
-	plist->sz--;
-}
-
-//给定位置pos插入元素
-void SListInsert(SLT* plist, size_t pos, SLTDataType x)
-{
-	assert((plist->phead == NULL && pos == 0) || plist->phead != NULL);
-	SLTNode* newNode = (SLTNode*)malloc(sizeof(SLTNode));
-	newNode->data = x;
-	//链表为空的情况
-	if (plist->phead == NULL)
-	{
-		newNode->next = NULL;
-		plist->phead = newNode;
-		return;
-	}
-	//链表不为空的情况
-	SLTNode* cur = plist->phead;
-	////统计元素个数
-	//int sz = 0;
-	////while ((cur = cur->next) != NULL)
-	////	sz++;
-	//for (; cur->next != NULL; sz++, cur = cur->next);
-	//sz++;
-	assert(plist->sz >= pos);
-	cur = plist->phead;
-	SLTNode* tmp = cur;
-	int i = 0;
-	for (i = 0; i < pos; i++)
-	{
-		tmp = cur;
-		cur = cur->next;
-	}
-	newNode->next = cur;
-	if (pos == 0)
-		plist->phead = newNode;
-	else
-		tmp->next = newNode;
 }
 
 //给定位置pos删除元素
-void SListErase(SLT* plist, size_t pos)
+void SListErase(SLTNode** pphead, SLTNode* pos)
 {
-	assert(plist->phead != NULL);
-
-	SLTNode* cur = plist->phead;
-	////统计元素个数
-	//int sz = 0;
-	//for (; cur->next != NULL; sz++, cur = cur->next);
-	//sz++;
-
-	assert(plist->sz > pos);
-
-	cur = plist->phead;
-	SLTNode* tmp = cur;
-	int i = 0;
-	for (i = 0; i < pos; i++)
+	assert(*pphead && pos);
+	SLTNode* cur = *pphead;
+	if (cur != pos)
 	{
-		tmp = cur;
-		cur = cur->next;
-	}
-	SLTNode* next = cur->next;
-	if (pos == 0)
-	{
-		free(plist->phead);
-		plist->phead = next;
+		while (cur->next != pos)
+		{
+			cur = cur->next;
+		}
+		cur->next = pos->next;
 	}
 	else
 	{
-		free(tmp->next);
-		tmp->next = next;
+		*pphead = pos->next;
 	}
+
+	free(pos);
+	pos = NULL;
 }
 
 //清空链表
-void SListClear(SLT* plist)
+void SListDistroy(SLTNode** pphead)
 {
-	if (plist->phead == NULL)
+	if (*pphead == NULL)
 		return;
-	SLTNode* cur = plist->phead;
+	SLTNode* cur = *pphead;
 	SLTNode* tmp = cur;
 	while(cur != NULL)
 	{
@@ -166,7 +159,6 @@ void SListClear(SLT* plist)
 		free(cur);
 		cur = tmp;
 	}
-	plist->phead = NULL;
-	plist->sz = 0;
+	*pphead = NULL;
 	
 }

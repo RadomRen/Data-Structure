@@ -13,32 +13,30 @@ typedef struct SListNode
 	struct SlistNode* next;
 }SLTNode;
 
-typedef struct SList
-{
-	SLTNode* phead;
-	size_t sz;
-}SLT;
 
 //打印链表
-void SListPrint(SLT* plist);
+void SListPrint(SLTNode* phead);
 
 //链表后插
-void SListPushBack(SLT* plist, SLTDataType x);
+void SListPushBack(SLTNode** pphead, SLTDataType x);
 
 //链表尾删
-void SListPopBack(SLT* plist);
+void SListPopBack(SLTNode** pphead);
 
 //链表头插
-void SListPushFront(SLT* plist, SLTDataType x);
+void SListPushFront(SLTNode** pphead, SLTDataType x);
 
 //链表头删
-void SListPopFront(SLT* plist);
+void SListPopFront(SLTNode** pphead);
+
+//链表元素查找
+SLTNode* SListFind(SLTNode* phead, SLTDataType x);
 
 //给定位置pos插入元素
-void SListInsert(SLT* plist, size_t pos, SLTDataType x);
+void SListInsert(SLTNode** pphead, SLTNode* pos, SLTDataType x);
 
 //给定位置pos删除元素
-void SListErase(SLT* plist, size_t pos);
+void SListErase(SLTNode** pphead, SLTNode* pos);
 
 //清空链表
-void SListClear(SLT* plist);
+void SListDistroy(SLTNode** pphead);

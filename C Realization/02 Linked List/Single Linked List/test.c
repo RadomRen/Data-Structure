@@ -4,65 +4,126 @@
 //尾删尾插测试
 void SLTTest1()
 {
-	SLT slist = { NULL, 0 };
-	SListPushBack(&slist, 1);
-	SListPushBack(&slist, 2);
-	SListPushBack(&slist, 3);
-	SListPushBack(&slist, 4);
+	SLTNode* phead = NULL;
+	SListPushBack(&phead, 1);
+	SListPushBack(&phead, 2);
+	SListPushBack(&phead, 3);
+	SListPushBack(&phead, 4);
 
-	SListPrint(&slist);
+	SListPrint(phead);
 
-	SListPopBack(&slist);
-	SListPushBack(&slist, 1);
-	SListPushBack(&slist, 2);
+	SListPopBack(&phead);
+	SListPushBack(&phead, 1);
+	SListPushBack(&phead, 2);
 
-	SListPrint(&slist);
+	SListPrint(phead);
 }
 
 //头删头插测试
 void SLTTest2()
 {
-	SLT slist = { NULL, 0 };
-	SListPushFront(&slist, 1);
-	SListPushFront(&slist, 2);
-	SListPushFront(&slist, 3);
-	SListPushFront(&slist, 4);
+	SLTNode* phead = NULL;
+	SListPushFront(&phead, 1);
+	SListPushFront(&phead, 2);
+	SListPushFront(&phead, 3);
+	SListPushFront(&phead, 4);
 
-	SListPrint(&slist);
+	SListPrint(phead);
 
-	SListPopFront(&slist);
-	SListPopFront(&slist);
+	SListPopFront(&phead);
+	SListPopFront(&phead);
 
-	SListPrint(&slist);
+	SListPrint(phead);
 }
 
-//给定位置插入和删除的测试
+//单链表查找元素和修改测试
 void SLTTest3()
 {
-	SLT slist = { NULL, 0 };
-	SListPushFront(&slist, 1);
-	SListPushFront(&slist, 2);
-	SListPushFront(&slist, 3);
-	SListPushFront(&slist, 4);
+	SLTNode* phead = NULL;
 
-	SListPrint(&slist);
+	SLTNode* ret = SListFind(phead, 4);
+	if (ret)
+		printf("找到元素：%d\n", ret->data);
+	else
+		printf("元素不存在。\n");
 
-	SListInsert(&slist, 2, 10);
+	SListPushBack(&phead, 1);
+	SListPushBack(&phead, 2);
+	SListPushBack(&phead, 3);
+	SListPushBack(&phead, 2);
+	SListPushBack(&phead, 5);
+	SListPushBack(&phead, 2);
 
-	SListPrint(&slist);
+	SListPrint(phead);
 
-	SListErase(&slist, 0);
+	SLTNode* pos = SListFind(phead, 2);
+	int i = 1;
+	while (pos)
+	{
+		printf("第%d个节点：%p -> %d\n", i++, pos, pos->data);
+		pos = SListFind(pos->next, 2);
+	}
 
-	SListPrint(&slist);
+	pos = SListFind(phead, 6);
+	i = 1;
+	while (pos)
+	{
+		printf("第%d个节点：%p -> %d\n", i++, pos, pos->data);
+		pos = SListFind(pos->next, 6);
+	}
+	if (i == 1)
+	{
+		printf("未找到\n");
+	}
 
-	SListClear(&slist);
+	//修改链表节点
+	pos = SListFind(phead, 2);
+	while (pos)
+	{
+		pos->data = 6;
+		pos = SListFind(pos->next, 2);
+	}
+	SListPrint(phead);
+}
 
-	SListPrint(&slist);
+
+//给定位置插入和删除的测试
+void SLTTest4()
+{
+	SLTNode* phead = NULL;
+	SListPushFront(&phead, 1);
+	SListPushFront(&phead, 2);
+	SListPushFront(&phead, 3);
+	SListPushFront(&phead, 4);
+	SListPushFront(&phead, 3);
+
+	SListPrint(phead);
+	SLTNode* pos = SListFind(phead, 3);
+	while (pos)
+	{
+		SListInsert(&phead, pos, 10);
+		pos = SListFind(pos->next, 3);
+	}
+	SListPrint(phead);
+
+
+	pos = SListFind(phead, 3);
+	while (pos)
+	{
+		SListErase(&phead, pos);
+		pos = SListFind(phead, 3);
+	}
+	SListPrint(phead);
+
+	SListDistroy(&phead);
+
+	SListPrint(phead);
 }
 
 int main()
 {
 	//SLTTest1();
 	//SLTTest2();
-	SLTTest3();
+	//SLTTest3();
+	SLTTest4();
 }
